@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - staging
+    tags:
+      - 'v*'
 
 jobs:
   test-build:
