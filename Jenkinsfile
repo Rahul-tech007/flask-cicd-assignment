@@ -1,37 +1,36 @@
+:::writing{variant="standard" id="58421"}
 pipeline {
-agent any
+    agent any
 
-```
-stages {
+    stages {
 
-    stage('Build') {
-        steps {
-            bat 'pip install -r requirements.txt'
+        stage('Build') {
+            steps {
+                bat 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat 'pytest'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                bat 'echo Deployment Successful'
+            }
         }
     }
 
-    stage('Test') {
-        steps {
-            bat 'pytest'
+    post {
+        success {
+            echo 'Pipeline completed successfully'
+        }
+
+        failure {
+            echo 'Pipeline failed'
         }
     }
-
-    stage('Deploy') {
-        steps {
-            bat 'echo Deployment Successful'
-        }
-    }
 }
-
-post {
-    success {
-        echo 'Pipeline completed successfully'
-    }
-
-    failure {
-        echo 'Pipeline failed'
-    }
-}
-```
-
-}
+:::
