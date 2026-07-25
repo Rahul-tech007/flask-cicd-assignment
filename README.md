@@ -612,4 +612,322 @@ screenshots/github-secrets.png
 
 GitHub Secrets enable secure and automated deployments by protecting sensitive credentials while allowing GitHub Actions workflows to authenticate with staging and production environments. This approach follows industry-standard CI/CD security practices and eliminates the need to store confidential information within the project source code.
 
+# GitHub Actions Workflow
+
+## Overview
+
+GitHub Actions is used to automate the Continuous Integration and Continuous Deployment (CI/CD) process for the Flask application. The workflow is defined in the following file:
+
+```
+.github/workflows/ci-cd.yml
+```
+
+Whenever changes are pushed to the repository, GitHub automatically executes the workflow and performs the required build, testing, and deployment tasks.
+
+---
+
+# Workflow Objectives
+
+The workflow automates the following activities:
+
+- Source code checkout
+- Python environment setup
+- Installation of project dependencies
+- Execution of unit tests using PyTest
+- Application build verification
+- Automatic deployment to the staging environment
+- Automatic deployment to the production environment using Git tags
+
+---
+
+# Workflow Triggers
+
+The workflow is configured to execute under different conditions.
+
+## Main Branch
+
+When code is pushed to the **main** branch, the workflow performs Continuous Integration by:
+
+- Checking out the source code
+- Installing dependencies
+- Running automated tests
+- Building the application
+
+```
+Push → main branch
+```
+
+---
+
+## Staging Branch
+
+When code is pushed to the **staging** branch, GitHub Actions performs:
+
+- Build
+- Test
+- Deploy to Staging
+
+```
+Push → staging branch
+```
+
+This simulates deploying the latest tested version of the application into a staging environment before production.
+
+---
+
+## Production Deployment
+
+Production deployment is triggered whenever a Git tag matching the pattern `v*` is pushed.
+
+Example:
+
+```bash
+git tag v1.3
+git push origin v1.3
+```
+
+This automatically starts the production deployment workflow.
+
+---
+
+# Workflow Architecture
+
+```
+                Developer
+                    │
+                    ▼
+             Push Code to GitHub
+                    │
+                    ▼
+           GitHub Actions Trigger
+                    │
+      ┌─────────────┴─────────────┐
+      │                           │
+      ▼                           ▼
+ Main Branch                 Staging Branch
+      │                           │
+      ▼                           ▼
+ Install Dependencies      Install Dependencies
+      │                           │
+      ▼                           ▼
+   Run Tests                 Run Tests
+      │                           │
+      ▼                           ▼
+ Build Application         Build Application
+                                  │
+                                  ▼
+                         Deploy to Staging
+
+                    Git Tag (v1.3)
+                           │
+                           ▼
+                  Deploy to Production
+```
+
+---
+
+# Workflow Jobs
+
+The workflow consists of three primary jobs.
+
+## Job 1 – Build and Test
+
+Purpose:
+
+Perform Continuous Integration by validating the source code.
+
+### Steps
+
+- Checkout repository
+- Setup Python
+- Install dependencies
+- Execute PyTest
+- Verify successful build
+
+Example commands:
+
+```bash
+pip install -r requirements.txt
+pytest
+```
+
+Expected Result
+
+```
+All unit tests passed.
+Build completed successfully.
+```
+
+---
+
+## Job 2 – Deploy to Staging
+
+Purpose:
+
+Automatically deploy the application after successful testing when changes are pushed to the **staging** branch.
+
+Deployment Conditions
+
+- Build successful
+- Tests successful
+- Branch = staging
+
+The workflow retrieves the following GitHub Secrets:
+
+- STAGING_HOST
+- STAGING_USER
+- STAGING_KEY
+
+These credentials are used to authenticate securely with the staging environment.
+
+Expected Result
+
+```
+Deployment to Staging Successful
+```
+
+---
+
+## Job 3 – Deploy to Production
+
+Purpose:
+
+Deploy the tested application into the production environment.
+
+Deployment Conditions
+
+- Git tag created
+- All previous jobs successful
+
+Example
+
+```bash
+git tag v1.3
+git push origin v1.3
+```
+
+The workflow securely retrieves:
+
+- PROD_HOST
+- PROD_USER
+- PROD_KEY
+
+These credentials are used for secure production deployment.
+
+Expected Result
+
+```
+Production Deployment Successful
+```
+
+---
+
+# Workflow Sequence
+
+The complete workflow follows this sequence:
+
+```
+Developer Pushes Code
+          │
+          ▼
+GitHub Detects Change
+          │
+          ▼
+Checkout Repository
+          │
+          ▼
+Setup Python Environment
+          │
+          ▼
+Install Dependencies
+          │
+          ▼
+Run Unit Tests
+          │
+          ▼
+Build Application
+          │
+          ├───────────────┐
+          ▼               ▼
+Main Branch         Staging Branch
+    │                    │
+    ▼                    ▼
+CI Complete      Deploy to Staging
+
+           Git Tag Created
+                  │
+                  ▼
+        Deploy to Production
+```
+
+---
+
+# Error Handling
+
+The workflow includes built-in validation to ensure that deployment occurs only when the application has passed all tests.
+
+If any stage fails:
+
+- Dependency installation fails
+- Unit tests fail
+- Build fails
+
+then:
+
+- The workflow stops immediately.
+- Deployment jobs are skipped.
+- GitHub Actions reports the failure in the workflow logs.
+
+This prevents untested or unstable code from being deployed.
+
+---
+
+# Benefits of the Workflow
+
+The implemented GitHub Actions workflow provides the following benefits:
+
+- Automated Continuous Integration
+- Automated Continuous Deployment
+- Early detection of code issues
+- Consistent build process
+- Secure deployment using GitHub Secrets
+- Branch-based deployment strategy
+- Tag-based production release
+- Reduced manual effort
+- Improved software quality
+
+---
+
+# Workflow Screenshots
+
+The following screenshots demonstrate successful execution of the workflow.
+
+## GitHub Actions Workflow
+
+```markdown
+![GitHub Actions](screenshots/github-actions-success.png)
+```
+
+---
+
+## Staging Deployment
+
+```markdown
+![Staging Deployment](screenshots/staging-deployment.png)
+```
+
+---
+
+## Production Deployment
+
+```markdown
+![Production Deployment](screenshots/production-deployment.png)
+```
+
+---
+
+# Summary
+
+The GitHub Actions workflow automates the complete CI/CD lifecycle of the Flask application. Every code change is automatically validated through dependency installation, automated testing, and build verification. Successful builds are deployed to the staging environment when changes are pushed to the **staging** branch, while production deployments are controlled through version tags, ensuring that only validated releases reach the production environment.
+
 https://github.com/Rahul-tech007/flask-cicd-assignment
