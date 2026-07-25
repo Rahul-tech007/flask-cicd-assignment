@@ -1,34 +1,491 @@
-Project Overview
-Flask Application CI/CD using Jenkins and GitHub Actions
-Prerequisites
-Python 3.11
-Git
-Jenkins
-GitHub Account
-Linux Server
-Jenkins Pipeline Flow
-Code Push
-↓
-Webhook
-↓
-Build
-↓
-Test
-↓
-Deploy
-↓
-Email Notification
-GitHub Actions Flow
-Push to Main
-↓
+# Flask Application CI/CD using Jenkins and GitHub Actions
+
+## Project Overview
+
+This project demonstrates a complete Continuous Integration and Continuous Deployment (CI/CD) pipeline for a Flask application using **Jenkins** and **GitHub Actions**.
+
+The project automates:
+
+- Installing application dependencies
+- Running automated unit tests using PyTest
+- Building the application
+- Deploying to a staging environment
+- Deploying to a production environment using Git tags
+- Securing deployment credentials using GitHub Secrets
+
+---
+
+# Project Objectives
+
+This project was developed to demonstrate:
+
+- Jenkins Pipeline
+- GitHub Actions Workflow
+- Continuous Integration (CI)
+- Continuous Deployment (CD)
+- Automated Testing
+- GitHub Webhooks
+- GitHub Secrets
+- Branch Based Deployment
+- Tag Based Production Deployment
+
+---
+
+# Technologies Used
+
+| Technology | Version |
+|------------|----------|
+| Python | 3.12 |
+| Flask | Latest |
+| PyTest | Latest |
+| Jenkins | Latest LTS |
+| GitHub Actions | Latest |
+| Git | Latest |
+| Ubuntu GitHub Runner | ubuntu-latest |
+
+---
+
+# Repository Structure
+
+```
+flask-cicd-assignment
+│
+├── .github
+│   └── workflows
+│       └── ci-cd.yml
+│
+├── Jenkinsfile
+├── app.py
+├── test_app.py
+├── requirements.txt
+├── README.md
+└── screenshots/
+```
+
+---
+
+# Prerequisites
+
+Before running the project ensure the following are installed.
+
+- Python 3.12
+- pip
+- Git
+- Jenkins
+- GitHub Account
+- GitHub Repository
+- PyTest
+
+---
+
+# Jenkins CI/CD Pipeline
+
+The Jenkins pipeline automates the application build, testing and deployment.
+
+## Stage 1 – Checkout
+
+Source code is pulled from the GitHub repository.
+
+```
+GitHub Repository
+        │
+        ▼
+Jenkins Checkout
+```
+
+---
+
+## Stage 2 – Build
+
+Jenkins installs all required Python packages.
+
+Command executed:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## Stage 3 – Test
+
+The application is tested using PyTest.
+
+Command:
+
+```bash
+pytest
+```
+
+Expected Output
+
+```
+Tests Passed
+```
+
+---
+
+## Stage 4 – Deploy
+
+If all tests pass, Jenkins deploys the Flask application.
+
+Deployment Output
+
+```
+Deploying Flask Application...
+Deployment Successful
+```
+
+---
+
+# Jenkins Pipeline Flow
+
+```
+GitHub Push
+      │
+      ▼
+Webhook Trigger
+      │
+      ▼
+Checkout Code
+      │
+      ▼
 Install Dependencies
-↓
+      │
+      ▼
 Run Tests
-↓
+      │
+      ▼
 Build
-Push to Staging
+      │
+      ▼
+Deploy
+```
+
+---
+
+# GitHub Webhook
+
+Whenever code is pushed to the **main** branch:
+
+GitHub
+
 ↓
+
+Webhook
+
+↓
+
+Jenkins Job
+
+↓
+
+Pipeline Execution
+
+---
+
+# GitHub Actions Workflow
+
+The GitHub Actions workflow automates CI/CD directly from GitHub.
+
+Workflow file
+
+```
+.github/workflows/ci-cd.yml
+```
+
+---
+
+## Trigger
+
+```yaml
+on:
+  push:
+    branches:
+      - main
+      - staging
+    tags:
+      - 'v*'
+```
+
+---
+
+# Workflow Stages
+
+## Job 1 – Test & Build
+
+The workflow performs:
+
+- Checkout repository
+- Setup Python
+- Install Dependencies
+- Run Tests
+- Build Application
+
+---
+
+## Job 2 – Deploy to Staging
+
+Trigger
+
+```
+Push to staging branch
+```
+
+Action
+
+```
 Deploy to Staging
-Release Tag
-↓
+```
+
+---
+
+## Job 3 – Deploy to Production
+
+Trigger
+
+```
+Git Tag (v1.3)
+```
+
+Action
+
+```
 Deploy to Production
+```
+
+---
+
+# GitHub Secrets
+
+Sensitive deployment information is stored securely using GitHub Repository Secrets.
+
+| Secret | Purpose |
+|---------|----------|
+| STAGING_HOST | Staging Server Address |
+| STAGING_USER | Staging Username |
+| STAGING_KEY | SSH Private Key |
+| PROD_HOST | Production Server Address |
+| PROD_USER | Production Username |
+| PROD_KEY | SSH Private Key |
+
+No credentials are stored inside the repository.
+
+---
+
+# Branch Strategy
+
+Main Branch
+
+```
+Production Ready Code
+```
+
+Staging Branch
+
+```
+Testing and Staging Deployment
+```
+
+Production
+
+```
+Git Tags
+Example:
+v1.3
+```
+
+---
+
+# Automated Testing
+
+Testing framework used
+
+```
+PyTest
+```
+
+Run manually
+
+```bash
+pytest
+```
+
+Expected Result
+
+```
+All Tests Passed
+```
+
+---
+
+# Deployment Strategy
+
+## Staging Deployment
+
+Triggered automatically when code is pushed to:
+
+```
+staging
+```
+
+---
+
+## Production Deployment
+
+Triggered automatically when a Git tag is pushed.
+
+Example
+
+```bash
+git tag v1.3
+git push origin v1.3
+```
+
+---
+
+# GitHub Actions Flow
+
+```
+Push to Main
+      │
+      ▼
+Install Dependencies
+      │
+      ▼
+Run Tests
+      │
+      ▼
+Build
+```
+
+For Staging
+
+```
+Push to Staging
+      │
+      ▼
+Deploy to Staging
+```
+
+For Production
+
+```
+Create Git Tag
+      │
+      ▼
+Deploy to Production
+```
+
+---
+
+# Jenkins Screenshots
+
+Add the following screenshots inside:
+
+```
+screenshots/
+```
+
+Example
+
+```
+screenshots/
+│
+├── jenkins-dashboard.png
+├── pipeline-success.png
+├── console-output.png
+├── build-stage.png
+├── deploy-stage.png
+```
+
+Example in README
+
+```markdown
+## Jenkins Dashboard
+
+![Jenkins Dashboard](screenshots/jenkins-dashboard.png)
+
+## Successful Pipeline
+
+![Pipeline](screenshots/pipeline-success.png)
+```
+
+---
+
+# GitHub Actions Screenshots
+
+```
+screenshots/github-actions-success.png
+screenshots/staging-deployment.png
+screenshots/production-deployment.png
+screenshots/github-secrets.png
+```
+
+Example
+
+```markdown
+## GitHub Actions Workflow
+
+![Workflow](screenshots/github-actions-success.png)
+
+## Staging Deployment
+
+![Staging](screenshots/staging-deployment.png)
+
+## Production Deployment
+
+![Production](screenshots/production-deployment.png)
+```
+
+---
+
+# Jenkinsfile
+
+The Jenkins pipeline performs
+
+- Checkout
+- Install Dependencies
+- Run Tests
+- Build
+- Deploy
+
+---
+
+# GitHub Workflow
+
+The GitHub workflow performs
+
+- Checkout
+- Setup Python
+- Install Dependencies
+- Run Tests
+- Build
+- Deploy to Staging
+- Deploy to Production
+
+---
+
+# Future Improvements
+
+- Docker Container Deployment
+- Kubernetes Deployment
+- SonarQube Integration
+- Trivy Image Scanning
+- Slack Notifications
+- Email Notifications
+- AWS EC2 Deployment
+
+---
+
+# Author
+
+Rahul Bansal
+
+GitHub
+
+https://github.com/Rahul-tech007
+
+Repository
+
+https://github.com/Rahul-tech007/flask-cicd-assignment
