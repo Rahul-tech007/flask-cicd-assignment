@@ -488,6 +488,11 @@ https://github.com/Rahul-tech007
 
 Repository
 
+<<<<<<< HEAD
+=======
+https://github.com/Rahul-tech007/flask-cicd-assignment
+
+>>>>>>> 061775c (Enhanced README and added project screenshots)
 # GitHub Secrets
 
 ## Overview
@@ -1321,6 +1326,10 @@ This Jenkins pipeline provides the following advantages:
 
 # Summary
 
+<<<<<<< HEAD
 The Jenkins pipeline automates the complete build, test, and deployment lifecycle of the Flask application. Every code change is automatically processed through dependency installation, automated testing, and deployment, ensuring that only validated code is deployed. By defining the process in a `Jenkinsfile`, the project follows the **Pipeline as Code** approach, making the CI/CD workflow version-controlled, reproducible, and easy to maintain.
 
 https://github.com/Rahul-tech007/flask-cicd-assignment
+=======
+The Jenkins pipeline automates the complete build, test, and deployment lifecycle of the Flask application. Every code change is automatically processed through dependency installation, automated testing, and deployment, ensuring that only validated code is deployed. By defining the process in a `Jenkinsfile`, the project follows the **Pipeline as Code** approach, making the CI/CD workflow version-controlled, reproducible, and easy to maintain.
+>>>>>>> 061775c (Enhanced README and added project screenshots)
