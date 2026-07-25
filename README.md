@@ -488,4 +488,128 @@ https://github.com/Rahul-tech007
 
 Repository
 
+# GitHub Secrets
+
+## Overview
+
+GitHub Secrets provide a secure mechanism to store sensitive information such as server credentials, SSH private keys, API tokens, and deployment credentials. Secrets are encrypted by GitHub and are only accessible during workflow execution.
+
+This project uses GitHub Secrets to simulate secure deployment to staging and production environments without exposing sensitive information in the source code.
+
+> **Note:** No credentials are hardcoded in this repository. All deployment-related information is stored securely using GitHub Repository Secrets.
+
+---
+
+# Configured Secrets
+
+The following repository secrets have been configured under:
+
+```
+Repository
+→ Settings
+→ Secrets and variables
+→ Actions
+```
+
+| Secret Name | Description | Used For |
+|-------------|-------------|----------|
+| STAGING_HOST | Hostname or IP address of the staging server | Staging deployment |
+| STAGING_USER | SSH username for the staging server | Staging deployment |
+| STAGING_KEY | SSH private key used to authenticate with the staging server | Secure staging deployment |
+| PROD_HOST | Hostname or IP address of the production server | Production deployment |
+| PROD_USER | SSH username for the production server | Production deployment |
+| PROD_KEY | SSH private key used to authenticate with the production server | Secure production deployment |
+
+---
+
+# Why GitHub Secrets are Required
+
+Using GitHub Secrets provides several advantages:
+
+- Prevents sensitive credentials from being exposed in the source code.
+- Ensures secure authentication during automated deployments.
+- Protects SSH keys and server credentials.
+- Enables safe collaboration without sharing confidential information.
+- Follows DevSecOps best practices for CI/CD pipelines.
+
+---
+
+# Workflow Integration
+
+The GitHub Actions workflow accesses these secrets during deployment.
+
+Example:
+
+```yaml
+env:
+  STAGING_HOST: ${{ secrets.STAGING_HOST }}
+  STAGING_USER: ${{ secrets.STAGING_USER }}
+```
+
+Similarly, production deployment accesses:
+
+```yaml
+env:
+  PROD_HOST: ${{ secrets.PROD_HOST }}
+  PROD_USER: ${{ secrets.PROD_USER }}
+```
+
+---
+
+# Deployment Process
+
+## Staging Deployment
+
+When code is pushed to the **staging** branch:
+
+1. GitHub Actions starts the workflow.
+2. The application is built and tested.
+3. GitHub retrieves the staging secrets securely.
+4. The deployment job uses the stored credentials to connect to the staging environment.
+5. The application is deployed successfully.
+
+---
+
+## Production Deployment
+
+When a Git tag (for example **v1.3**) is pushed:
+
+1. GitHub Actions starts the production workflow.
+2. The application is tested again.
+3. Production secrets are retrieved securely.
+4. The deployment job authenticates using the production SSH key.
+5. The application is deployed to the production environment.
+
+---
+
+# Security Best Practices
+
+This project follows these security practices:
+
+- No passwords or private keys are stored in the repository.
+- Sensitive information is encrypted using GitHub Secrets.
+- Secrets are available only during workflow execution.
+- Repository contributors cannot view secret values after they are created.
+- Secret values remain hidden in workflow logs unless explicitly exposed.
+
+---
+
+# Repository Secrets Screenshot
+
+The following screenshot shows the configured repository secrets.
+
+```
+screenshots/github-secrets.png
+```
+
+```markdown
+![GitHub Repository Secrets](screenshots/github-secrets.png)
+```
+
+---
+
+# Summary
+
+GitHub Secrets enable secure and automated deployments by protecting sensitive credentials while allowing GitHub Actions workflows to authenticate with staging and production environments. This approach follows industry-standard CI/CD security practices and eliminates the need to store confidential information within the project source code.
+
 https://github.com/Rahul-tech007/flask-cicd-assignment
