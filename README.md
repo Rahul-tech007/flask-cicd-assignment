@@ -930,4 +930,397 @@ The following screenshots demonstrate successful execution of the workflow.
 
 The GitHub Actions workflow automates the complete CI/CD lifecycle of the Flask application. Every code change is automatically validated through dependency installation, automated testing, and build verification. Successful builds are deployed to the staging environment when changes are pushed to the **staging** branch, while production deployments are controlled through version tags, ensuring that only validated releases reach the production environment.
 
+# Jenkins Pipeline
+
+## Overview
+
+Jenkins is used as the Continuous Integration and Continuous Deployment (CI/CD) server for this project. It automatically builds, tests, and deploys the Flask application whenever changes are pushed to the GitHub repository.
+
+The pipeline is defined in the `Jenkinsfile` located in the root directory of the project.
+
+```
+Jenkinsfile
+```
+
+The pipeline follows the **Pipeline as Code** approach, where the complete build process is maintained in source control and executed automatically by Jenkins.
+
+---
+
+# Pipeline Objectives
+
+The Jenkins pipeline automates the following tasks:
+
+- Retrieve the latest source code from GitHub
+- Install all required Python dependencies
+- Execute automated unit tests using PyTest
+- Deploy the Flask application after successful testing
+- Display the build status in Jenkins
+- Send email notifications after pipeline completion (if SMTP is configured)
+
+---
+
+# Jenkins Pipeline Architecture
+
+```
+               GitHub Repository
+                       │
+                       ▼
+               GitHub Webhook
+                       │
+                       ▼
+                  Jenkins Job
+                       │
+                       ▼
+                Checkout Source
+                       │
+                       ▼
+             Install Dependencies
+                       │
+                       ▼
+                 Execute Tests
+                       │
+              Tests Successful?
+                │             │
+               No            Yes
+                │             │
+          Build Failed        ▼
+                       Deploy Application
+                              │
+                              ▼
+                      Pipeline Completed
+```
+
+---
+
+# Pipeline Stages
+
+The Jenkins pipeline consists of four main stages.
+
+---
+
+## Stage 1 – Checkout
+
+### Purpose
+
+The Checkout stage downloads the latest version of the source code from the GitHub repository into the Jenkins workspace.
+
+This ensures that every build uses the most recent code available in the repository.
+
+Example command executed internally:
+
+```bash
+git clone https://github.com/<username>/flask-cicd-assignment.git
+```
+
+Expected Outcome
+
+- Latest source code is available in the Jenkins workspace.
+- Build process begins with the current application version.
+
+---
+
+## Stage 2 – Build
+
+### Purpose
+
+The Build stage prepares the application by installing all required Python packages listed in the `requirements.txt` file.
+
+Example command:
+
+```bash
+pip install -r requirements.txt
+```
+
+Packages installed include:
+
+- Flask
+- Werkzeug
+- Click
+- Jinja2
+- PyTest
+- Other project dependencies
+
+Expected Outcome
+
+- All dependencies are installed successfully.
+- Application environment is ready for testing.
+
+---
+
+## Stage 3 – Test
+
+### Purpose
+
+The Test stage verifies that the application is functioning correctly by running automated unit tests using **PyTest**.
+
+Command executed:
+
+```bash
+pytest
+```
+
+Expected Output
+
+```
+==========================
+1 passed
+==========================
+```
+
+If any test fails:
+
+- Pipeline execution stops immediately.
+- Deployment stage is skipped.
+- Jenkins marks the build as **Failed**.
+
+This ensures that only tested code is deployed.
+
+---
+
+## Stage 4 – Deploy
+
+### Purpose
+
+The Deploy stage executes only if the Build and Test stages complete successfully.
+
+The deployment process starts the Flask application and confirms that it is ready to serve requests.
+
+Example deployment message:
+
+```
+Deployment Successful
+```
+
+Expected Outcome
+
+- Application starts successfully.
+- Flask application becomes accessible through the configured URL.
+- Jenkins marks the build as **Success**.
+
+---
+
+# Jenkinsfile Explanation
+
+The `Jenkinsfile` is divided into several sections.
+
+## Agent
+
+```groovy
+agent any
+```
+
+This instructs Jenkins to execute the pipeline on any available Jenkins agent.
+
+---
+
+## Stages
+
+The `stages` block defines the sequence of tasks executed during the pipeline.
+
+```groovy
+stages {
+    stage('Build') { ... }
+    stage('Test') { ... }
+    stage('Deploy') { ... }
+}
+```
+
+Each stage performs a specific part of the CI/CD process.
+
+---
+
+## Build Stage
+
+Responsible for installing project dependencies.
+
+Typical command:
+
+```groovy
+bat 'pip install -r requirements.txt'
+```
+
+---
+
+## Test Stage
+
+Executes automated tests.
+
+```groovy
+bat 'pytest'
+```
+
+If tests fail, Jenkins stops the pipeline.
+
+---
+
+## Deploy Stage
+
+Runs only after successful completion of all previous stages.
+
+Typical deployment command:
+
+```groovy
+echo "Deployment Successful"
+```
+
+---
+
+## Post Section
+
+The `post` block executes after the pipeline finishes.
+
+It can be used to:
+
+- Display build status
+- Send email notifications
+- Archive build artifacts
+- Perform cleanup tasks
+
+Example:
+
+```groovy
+post {
+    success {
+        echo 'Pipeline completed successfully'
+    }
+
+    failure {
+        echo 'Pipeline failed'
+    }
+}
+```
+
+---
+
+# Pipeline Execution Flow
+
+```
+Developer Pushes Code
+          │
+          ▼
+GitHub Repository
+          │
+          ▼
+GitHub Webhook
+          │
+          ▼
+Jenkins Triggered
+          │
+          ▼
+Checkout Repository
+          │
+          ▼
+Install Dependencies
+          │
+          ▼
+Run PyTest
+          │
+      Tests Passed?
+      │         │
+     No        Yes
+      │         ▼
+ Build Failed  Deploy Application
+                │
+                ▼
+        Pipeline Completed
+```
+
+---
+
+# Error Handling
+
+The Jenkins pipeline automatically validates every stage.
+
+If any stage fails:
+
+- Source code checkout fails
+- Dependency installation fails
+- Unit tests fail
+
+then:
+
+- Remaining stages are skipped.
+- Jenkins marks the build as **Failed**.
+- The failure is displayed in the Jenkins Dashboard.
+- Email notification is sent if SMTP is configured.
+
+This prevents defective code from being deployed.
+
+---
+
+# Jenkins Dashboard
+
+The Jenkins Dashboard provides an overview of:
+
+- Pipeline jobs
+- Build history
+- Build status
+- Console output
+- Pipeline stages
+- Execution duration
+
+Example screenshot:
+
+```markdown
+## Jenkins Dashboard
+
+![Jenkins Dashboard](screenshots/jenkins-dashboard.png)
+```
+
+---
+
+# Jenkins Console Output
+
+The Console Output displays detailed logs for every stage executed during the pipeline, including:
+
+- Git checkout
+- Dependency installation
+- PyTest execution
+- Deployment status
+- Final pipeline result
+
+Example screenshot:
+
+```markdown
+## Console Output
+
+![Console Output](screenshots/console-output.png)
+```
+
+---
+
+# Jenkins Pipeline Screenshots
+
+Include the following screenshots in the `screenshots` folder:
+
+| Screenshot | Description |
+|------------|-------------|
+| `jenkins-dashboard.png` | Jenkins Dashboard showing the pipeline job |
+| `pipeline-success.png` | Successful execution of Build, Test, and Deploy stages |
+| `console-output.png` | Complete Jenkins console output |
+| `build-history.png` | Jenkins build history |
+| `pytest-success.png` | Successful execution of unit tests |
+| `flask-running.png` | Flask application running after deployment |
+
+---
+
+# Benefits of Using Jenkins
+
+This Jenkins pipeline provides the following advantages:
+
+- Automated Continuous Integration
+- Automated Continuous Deployment
+- Faster feedback on code changes
+- Consistent build process
+- Automated testing with PyTest
+- Reduced manual intervention
+- Easy monitoring through the Jenkins Dashboard
+- Scalable and reusable pipeline configuration
+
+---
+
+# Summary
+
+The Jenkins pipeline automates the complete build, test, and deployment lifecycle of the Flask application. Every code change is automatically processed through dependency installation, automated testing, and deployment, ensuring that only validated code is deployed. By defining the process in a `Jenkinsfile`, the project follows the **Pipeline as Code** approach, making the CI/CD workflow version-controlled, reproducible, and easy to maintain.
+
 https://github.com/Rahul-tech007/flask-cicd-assignment
